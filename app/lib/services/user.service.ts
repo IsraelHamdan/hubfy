@@ -2,7 +2,7 @@ import { PrismaClientKnownRequestError, PrismaClientUnknownRequestError, PrismaC
 import { prisma } from "../prisma";
 import { CreateUserDTO, UpdateUserDTO, UserResponseDTO } from "../validatiors/user.schema";
 import { hashPassoword } from "./argon.service";
-import { PrismaErrors } from "../utils";
+import { PrismaErrors } from "@/utils/utils";
 
 export async function createUser(data: CreateUserDTO): Promise<UserResponseDTO> {
   try { 
@@ -102,5 +102,14 @@ export async function deleteUser(id: number) {
       where: {id: id}
     })
   } catch(err) {
+    if(
+      err instanceof PrismaClientKnownRequestError ||
+      err instanceof PrismaClientUnknownRequestError || 
+      err instanceof PrismaClientValidationError
+    ) {
+
+      PrismaErrors(err)
+    }
+    throw err
   }
 }

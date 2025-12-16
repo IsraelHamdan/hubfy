@@ -1,17 +1,18 @@
 import { PrismaClientKnownRequestError, PrismaClientUnknownRequestError, PrismaClientValidationError } from "@/generated/prisma/internal/prismaNamespace";
 
 
-export function PrismaErrors(err: unknown) {
+export function PrismaErrors(err: unknown):never {
   if(err instanceof PrismaClientValidationError) {
-    throw err.message
+    throw new Error (err.message)
   }
 
   if(err instanceof PrismaClientKnownRequestError) {
-    throw err.message
+    throw new Error (err.message)
   }
 
   if(err instanceof PrismaClientUnknownRequestError) {
-    throw err.message
+    throw new Error (err.message)
   }
-
+  throw new Error("Erro desconhecido")
 }
+
