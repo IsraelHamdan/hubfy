@@ -2,6 +2,7 @@ import { prisma } from "@/app/lib/prisma";
 import { hashPassoword } from "@/app/lib/services/argon.service";
 import { createUser } from "@/app/lib/services/user.service";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
+import { PrismaErrors } from '@/utils/prisma-errors'
 
 jest.mock('@/app/lib/prisma', () => ({
   prisma: {
@@ -17,7 +18,7 @@ jest.mock('@/app/lib/services/argon.service', () => ({
   hashPassoword: jest.fn(),
 }))
 
-jest.mock('@/utils/utils', () => ({
+jest.mock('@/utils/prisma-errors', () => ({
   PrismaErrors: jest.fn(),
 }))
 
@@ -39,7 +40,7 @@ describe('UserService - createUser', () => {
 
       const hashedPassword = '$argon2id$v=19$m=65536,t=3,p=4$...'
       const createdUser = {
-        id: 1,
+        id: 'cku3x9m7w0000yq1h4r6p2abc',
         name: userData.name,
         email: userData.email,
         password: hashedPassword,
@@ -86,7 +87,7 @@ describe('UserService - createUser', () => {
       ;(prisma.user.findUnique as jest.Mock).mockResolvedValue(null)
       ;(hashPassoword as jest.Mock).mockResolvedValue(hashedPassword)
       ;(prisma.user.create as jest.Mock).mockResolvedValue({
-        id: 2,
+        id: 'cku3x9m7w0000yt1h4r6p2abc*',
         ...userData,
         password: hashedPassword,
         createdAt: new Date(),
@@ -115,7 +116,7 @@ describe('UserService - createUser', () => {
       }
 
       const existingUser = {
-        id: 1,
+        id: 'cku3x9b7w0000yq1h4r6p2abc',
         name: 'Pedro Existente',
         email: 'pedro@example.com',
         password: '$argon2id$...',
@@ -141,7 +142,7 @@ describe('UserService - createUser', () => {
       }
 
       ;(prisma.user.findUnique as jest.Mock).mockResolvedValue({
-        id: 1,
+        id: 'ckv3x9m7w0000yq1h4r6p2abc',
         email: 'ana@example.com',
       })
 
@@ -245,7 +246,7 @@ describe('UserService - createUser', () => {
       ;(prisma.user.create as jest.Mock).mockImplementation(() => {
         callOrder.push('create')
         return Promise.resolve({
-          id: 1,
+          id: 'cku3x9m7w0000yq1h4r6k2abc',
           ...userData,
           password: '$argon2id$...',
           createdAt: new Date(),
@@ -272,7 +273,7 @@ describe('UserService - createUser', () => {
       ;(prisma.user.findUnique as jest.Mock).mockResolvedValue(null)
       ;(hashPassoword as jest.Mock).mockResolvedValue('$argon2id$...')
       ;(prisma.user.create as jest.Mock).mockResolvedValue({
-        id: 1,
+        id: 'cku3x9m7w0000yq1h4r6p3abc',
         ...validUserData,
         password: '$argon2id$...',
         createdAt: new Date(),
@@ -300,7 +301,7 @@ describe('UserService - createUser', () => {
       ;(prisma.user.findUnique as jest.Mock).mockResolvedValue(null)
       ;(hashPassoword as jest.Mock).mockResolvedValue(hashedPassword)
       ;(prisma.user.create as jest.Mock).mockResolvedValue({
-        id: 1,
+        id: 'cku3x9m7w0000yq1h4r6p2xbc',
         name: userData.name,
         email: userData.email,
         password: hashedPassword,
@@ -329,7 +330,7 @@ describe('UserService - createUser', () => {
       ;(prisma.user.findUnique as jest.Mock).mockResolvedValue(null)
       ;(hashPassoword as jest.Mock).mockResolvedValue('$argon2id$...')
       ;(prisma.user.create as jest.Mock).mockResolvedValue({
-        id: 1,
+        id: 'cku3x9m7x0000yq1h4r6p2abc',
         ...userData,
         password: '$argon2id$...',
         createdAt: new Date(),
@@ -353,7 +354,7 @@ describe('UserService - createUser', () => {
       ;(prisma.user.findUnique as jest.Mock).mockResolvedValue(null)
       ;(hashPassoword as jest.Mock).mockResolvedValue('$argon2id$...')
       ;(prisma.user.create as jest.Mock).mockResolvedValue({
-        id: 1,
+        id: 'cku3x9m7w0000yq1h4r6p2aec',
         ...userData,
         password: '$argon2id$...',
         createdAt: new Date(),

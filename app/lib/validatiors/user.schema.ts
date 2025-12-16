@@ -13,7 +13,7 @@ export const updateUserSchema = createUserSchema.partial()
 export type UpdateUserDTO = z.infer<typeof updateUserSchema>
 
 export const userSchema = createUserSchema.extend({
-  id: z.number(), 
+  id: z.string(), 
   createdAt: z.date()
 }).omit({password: true})
 

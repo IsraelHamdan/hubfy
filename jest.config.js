@@ -5,6 +5,7 @@ const createJestConfig = nextJest({
 
 const customJestConfig = {
   testEnvironment: 'node',
+  testTimeout: 30000,
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
   },

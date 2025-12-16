@@ -2,7 +2,7 @@ import { PrismaClientKnownRequestError, PrismaClientUnknownRequestError, PrismaC
 import { prisma } from "../prisma";
 import { CreateUserDTO, UpdateUserDTO, UserResponseDTO } from "../validatiors/user.schema";
 import { hashPassoword } from "./argon.service";
-import { PrismaErrors } from "@/utils/utils";
+import { PrismaErrors } from "@/utils/prisma-errors";
 
 export async function createUser(data: CreateUserDTO): Promise<UserResponseDTO> {
   try { 
@@ -37,7 +37,7 @@ export async function createUser(data: CreateUserDTO): Promise<UserResponseDTO> 
   }
 }
 
-export async function findUserById(id: number): Promise<UserResponseDTO> {
+export async function findUserById(id: string): Promise<UserResponseDTO> {
   try { 
     const user = await prisma.user.findUnique({where: {id: id}})
     if(!user) throw new Error("Usuário não encontrado")
@@ -74,10 +74,10 @@ export async function findUserByEmail(email: string): Promise<UserResponseDTO> {
   }
 }
 
-export async function updateUser(data: UpdateUserDTO, id: number): Promise<UserResponseDTO> {
+export async function updateUser(data: UpdateUserDTO, id: string): Promise<UserResponseDTO> {
   try { 
     return await prisma.user.update({
-      where: {id: id}, 
+      where: {id}, 
       data: data
     })
   } catch(err) {
@@ -94,7 +94,7 @@ export async function updateUser(data: UpdateUserDTO, id: number): Promise<UserR
   
 }
 
-export async function deleteUser(id: number) {
+export async function deleteUser(id: string) {
   try { 
     const user = await findUserById(id)
     if(!user) throw new Error("Usuário não encotnrado")
