@@ -33,7 +33,15 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
           {status: 404}
         )
       }
+      if (err.message === 'FORBIDDEN') {
+        return NextResponse.json(
+          { message: 'Acesso negado' },
+          { status: 403 }
+        )
+      }
+  
     }
+    
     return NextResponse.json(
       { message: 'Erro ao criar task' },
       { status: 500 }
@@ -66,6 +74,13 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
           {status: 404}
         )
       }
+      if (err.message === 'FORBIDDEN') {
+        return NextResponse.json(
+          { message: 'Acesso negado' },
+          { status: 403 }
+        )
+      }
+  
     }
     return NextResponse.json(
       { message: 'Erro ao criar task' },

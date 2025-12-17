@@ -31,6 +31,12 @@ export async function GET(_: NextRequest, {params} : Params): Promise<NextRespon
           {status: 404}
         )
       }
+      if (err.message === 'FORBIDDEN') {
+        return NextResponse.json(
+          { message: 'Acesso negado' },
+          { status: 403 }
+        )
+      }
     }
     return NextResponse.json(
       { message: 'Erro ao criar task' },
@@ -69,6 +75,13 @@ export async function PATCH(req: NextRequest, {params}: Params): Promise<NextRes
           {status: 404}
         )
       }
+
+      if (err.message === 'FORBIDDEN') {
+        return NextResponse.json(
+          { message: 'Acesso negado' },
+          { status: 403 }
+        )
+      }
     }
     return NextResponse.json(
       { message: 'Erro ao criar task' },
@@ -101,6 +114,13 @@ export async function DELETE(_: NextRequest, {params}: Params): Promise<NextResp
         return NextResponse.json(
           {message: "Task não encontrada"},
           {status: 404}
+        )
+      }
+
+      if (err.message === 'FORBIDDEN') {
+        return NextResponse.json(
+          { message: 'Acesso negado' },
+          { status: 403 }
         )
       }
     }

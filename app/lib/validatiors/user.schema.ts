@@ -19,3 +19,9 @@ export const userSchema = createUserSchema.extend({
 
 export type UserResponseDTO = z.infer<typeof userSchema>
 
+export const userInternalResponseSchema = createUserSchema.extend({
+  id: z.string(), 
+  createdAt: z.date()
+})
+
+export type User = z.infer<typeof userInternalResponseSchema>

@@ -1,6 +1,6 @@
 import { PrismaClientKnownRequestError, PrismaClientUnknownRequestError, PrismaClientValidationError } from "@/generated/prisma/internal/prismaNamespace";
 import { prisma } from "../prisma";
-import { CreateUserDTO, UpdateUserDTO, UserResponseDTO } from "../validatiors/user.schema";
+import { CreateUserDTO, UpdateUserDTO, User, UserResponseDTO } from "../validatiors/user.schema";
 import { hashPassoword } from "./argon.service";
 import { PrismaErrors } from "@/utils/prisma-errors";
 
@@ -58,7 +58,7 @@ export async function findUserById(id: string): Promise<UserResponseDTO> {
 }
 
 
-export async function findUserByEmail(email: string): Promise<UserResponseDTO> {
+export async function findUserByEmail(email: string): Promise<User> {
   try { 
     return await prisma.user.findUniqueOrThrow({where: {email: email}})
   } catch(err) {
