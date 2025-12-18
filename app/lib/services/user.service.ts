@@ -58,7 +58,17 @@ export async function createUser(data: CreateUserDTO): Promise<AuthResponse> {
 
 export async function findUserById(id: string): Promise<UserResponseDTO> {
   try { 
-    const user = await prisma.user.findUnique({where: {id: id}})
+    const user = await prisma.user.findUnique(
+      {
+        where: {id: id},
+        select: {
+          id: true, 
+          name: true, 
+          email: true, 
+          createdAt: true
+        }
+      }
+    )
     if(!user) throw new Error("Usuário não encontrado")
     
     return user
