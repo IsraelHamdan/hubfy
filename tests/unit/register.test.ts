@@ -1,7 +1,8 @@
 import { prisma } from "@/app/lib/prisma";
 import { hashPassoword } from "@/app/lib/services/argon.service";
 import { createUser } from "@/app/lib/services/user.service";
-import { sing } from "@/app/lib/services/token.service";
+import { signRefresh, sing } from "@/app/lib/services/token.service";
+import { refresh } from "next/cache";
 
 jest.mock('@/app/lib/prisma', () => ({
   prisma: {
@@ -17,7 +18,8 @@ jest.mock('@/app/lib/services/argon.service', () => ({
 }))
 
 jest.mock('@/app/lib/services/token.service', () => ({
-  sing: jest.fn()
+  sing: jest.fn(), 
+  signRefresh: jest.fn()
 }))
 
 describe('AuthServie - CreateUser', () => {
@@ -38,6 +40,7 @@ describe('AuthServie - CreateUser', () => {
 
     ;(prisma.user.create as jest.Mock).mockResolvedValue(mockUser)
     ;(sing as jest.Mock).mockResolvedValue('fake-token')
+    ;(signRefresh as jest.Mock).mockResolvedValue('fake-refresh')
 
     const result = await createUser({
       name: 'User', 
@@ -51,7 +54,8 @@ describe('AuthServie - CreateUser', () => {
         name: 'User',
         email: 'user@test.com',
       },
-      token: 'fake-token',
+      accessToken: 'fake-token',
+      refreshToken: 'fake-refresh'
     })
 
     expect(prisma.user.findUnique).toHaveBeenCalledWith({

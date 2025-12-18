@@ -1,4 +1,5 @@
 import { POST } from "@/app/api/auth/register/route";
+import { setAuthCookies } from "@/app/lib/services/cookie.service";
 import { createUser } from "@/app/lib/services/user.service";
 import { NextRequest } from "next/server";
 
@@ -7,21 +8,23 @@ jest.mock('@/app/lib/services/user.service', () => ({
 }))
 
 jest.mock('@/app/lib/services/cookie.service', () => ({
-  setAuthCookie: jest.fn()
+  setAuthCookies: jest.fn()
 }))
 
 
 describe('POST /auth/register', () => {
   it('Deve registrar um usuário com sucesso', async () => {
-    ;(createUser as jest.Mock).mockResolvedValue({
+    (createUser as jest.Mock).mockResolvedValue({
       user: {
         id: 'user-123',
         name: 'Fulano',
         email: 'fulano@test.com',
-        createdAt: new Date('2025-01-03')
+        createdAt: new Date('2025-01-03'),
       },
-      token: 'fake-jwt-token'
+      accessToken: 'fake-access-token',
+      refreshToken: 'fake-refresh-token',
     })
+
 
     const req = new NextRequest(
       'http://localhost/api/auth/register', 
@@ -43,18 +46,22 @@ describe('POST /auth/register', () => {
     expect(body.user).toMatchObject({
       id: 'user-123',
       name: 'Fulano',
-      email: 'fulano@test.com'
+      email: 'fulano@test.com',
     })
 
-    if (process.env.NODE_ENV !== 'production') {
-      expect(body.token).toBe('fake-jwt-token')
-    }
+    // 🔥 NOVO: valida efeito colateral
+    expect(setAuthCookies).toHaveBeenCalledWith(
+      expect.objectContaining({
+        accessToken: 'fake-access-token',
+        refreshToken: 'fake-refresh-token',
+      })
+    )
 
     expect(createUser).toHaveBeenCalledWith({
       name: 'Fulano',
       email: 'fulano@test.com',
-      password: '12345678'
-    })
+      password: '12345678',
+  })
   })
 
   it(

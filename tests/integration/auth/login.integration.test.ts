@@ -1,13 +1,14 @@
 import { NextRequest } from 'next/server'
 import { POST } from '@/app/api/auth/login/route'
 import { login } from '@/app/lib/services/auth.service'
+import { setAuthCookies } from '@/app/lib/services/cookie.service';
 
 jest.mock('@/app/lib/services/auth.service', () => ({
   login: jest.fn(),
 }))
 
 jest.mock('@/app/lib/services/cookie.service', () => ({
-  setAuthCookie: jest.fn(),
+  setAuthCookies: jest.fn(),
 }))
 
 describe('POST /auth/login', () => {

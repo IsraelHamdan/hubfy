@@ -1,6 +1,6 @@
 import { verifyPassowrd } from "@/app/lib/services/argon.service";
 import { login } from "@/app/lib/services/auth.service";
-import { sing } from "@/app/lib/services/token.service";
+import { signRefresh, sing } from "@/app/lib/services/token.service";
 import {findUserByEmail } from "@/app/lib/services/user.service";
 
 jest.mock('@/app/lib/services/user.service', () => ({
@@ -23,7 +23,8 @@ jest.mock('@/app/lib/services/argon.service', () => ({
 }))
 
 jest.mock('@/app/lib/services/token.service', () => ({
-  sing: jest.fn()
+  sing: jest.fn(), 
+  signRefresh: jest.fn()
 }))
 
 describe('AuthService - login', () => {
@@ -40,6 +41,7 @@ describe('AuthService - login', () => {
     ;(findUserByEmail as jest.Mock).mockResolvedValue(mockUser)
     ;(verifyPassowrd as jest.Mock).mockResolvedValue(true)
     ;(sing as jest.Mock).mockResolvedValue('fake-jwt')
+    ;(signRefresh as jest.Mock).mockResolvedValue('fake-refresh')
 
     const result = await login({
       email: 'user@test.com',
@@ -47,7 +49,8 @@ describe('AuthService - login', () => {
     })
     
     expect(result.user.email).toBe('user@test.com')
-    expect(result.token).toBe('fake-jwt')
+    expect(result.accessToken).toBe('fake-jwt')
+    expect(result.refreshToken).toBe('fake-refresh')
   })
 
   it('Deve lançar erro se o usuário não existir', async () => {
