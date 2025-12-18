@@ -1,5 +1,5 @@
 import { login } from "@/app/lib/services/auth.service";
-import { setAuthCookie } from "@/app/lib/services/cookie.service";
+import { setAuthCookies } from "@/app/lib/services/cookie.service";
 import { authSchema } from "@/app/lib/validatiors/auth.login";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -9,14 +9,18 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
     const data = authSchema.parse(body)
 
-    const {user, token} = await login(data)
+    const {user, accessToken, refreshToken} = await login(data)
+
+    const responsePayload = process.env.NODE_ENV !== 'production'
+       ? {user, accessToken, refreshToken} : {user}
 
     const response = NextResponse.json(
-      {user, token}, 
+      responsePayload, 
       {status: 200}
     )
 
-    setAuthCookie({response, token})
+    setAuthCookies({response, accessToken, refreshToken})
+
     
     return response
 

@@ -64,3 +64,5 @@ describe('POST /auth/login', () => {
     expect(res.status).toBe(403)
   })
 })
+
+

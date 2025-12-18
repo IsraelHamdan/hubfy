@@ -3,8 +3,10 @@ import { prisma } from "../prisma";
 import { CreateUserDTO, UpdateUserDTO, User, UserResponseDTO } from "../validatiors/user.schema";
 import { hashPassoword } from "./argon.service";
 import { PrismaErrors } from "@/utils/prisma-errors";
+import { signRefresh, sing, TokenPayload } from "./token.service";
+import { AuthResponse } from "@/types/auth.types";
 
-export async function createUser(data: CreateUserDTO): Promise<UserResponseDTO> {
+export async function createUser(data: CreateUserDTO): Promise<AuthResponse> {
   try { 
     const existingUser = await prisma.user.findUnique({
       where: { email: data.email }
@@ -23,7 +25,24 @@ export async function createUser(data: CreateUserDTO): Promise<UserResponseDTO> 
       }
     })
 
-    return user 
+    const payload: TokenPayload = {
+      sub: user.id,
+      email: user.email
+    }
+
+    const accessToken = await sing(payload)
+    const refreshToken = await signRefresh(payload)
+    
+    return {
+      user: {
+        id: user.id,
+        name: user.name, 
+        email: user.email, 
+        createdAt: user.createdAt
+      },
+      accessToken,
+      refreshToken
+    }
   } catch(err) {
     if(
         err instanceof PrismaClientKnownRequestError ||
@@ -31,7 +50,7 @@ export async function createUser(data: CreateUserDTO): Promise<UserResponseDTO> 
         err instanceof PrismaClientValidationError
     ) {
 
-      PrismaErrors(err)
+       PrismaErrors(err)
     }
     throw err
   }

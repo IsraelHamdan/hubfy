@@ -1,24 +1,34 @@
 import { NextResponse } from 'next/server'
-import { ACCESS_TOKEN_MAX_AGE, AUTH_COOKIE_NAME } from '../auth/auth.constants';
+import { ACCESS_TOKEN_MAX_AGE, AUTH_COOKIE_NAME, AUTH_REFRESH_NAME } from '../auth/auth.constants';
 
 interface SetAuthCookieParams {
   response: NextResponse
-  token: string
+  accessToken: string, 
+  refreshToken?: string
 }
 
-export function setAuthCookie({
+export function setAuthCookies({
   response,
-  token,
+  accessToken,
+  refreshToken
 }: SetAuthCookieParams) {
-  response.cookies.set({
-    name: AUTH_COOKIE_NAME,
-    value: token,
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    path: '/',
-    maxAge: ACCESS_TOKEN_MAX_AGE, // 1h
-  })
+  response.cookies.set(
+    AUTH_COOKIE_NAME, accessToken,  {
+      httpOnly: true, 
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production', 
+      path: '/'
+    }
+  )
+
+  if(refreshToken) {
+    response.cookies.set(AUTH_REFRESH_NAME, refreshToken, {
+      httpOnly: true, 
+      sameSite: 'lax', 
+      secure: process.env.NODE_ENV === 'production', 
+      path: '/'
+    })
+  }
 }
 
 export function clearAuthCookie(response: NextResponse) {

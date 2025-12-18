@@ -1,5 +1,4 @@
-import { setAuthCookie } from "@/app/lib/services/cookie.service";
-import { sing } from "@/app/lib/services/token.service";
+import { setAuthCookies } from "@/app/lib/services/cookie.service";
 import { createUser } from "@/app/lib/services/user.service";
 import { createUserSchema, } from "@/app/lib/validatiors/user.schema";
 import { NextRequest, NextResponse } from "next/server";
@@ -8,42 +7,31 @@ import { ZodError } from "zod";
 export async function POST (req: NextRequest): Promise<NextResponse> {
   try { 
     const body = await req.json() 
-
+    
     const data = createUserSchema.parse(body)
 
-    const user = await createUser(data)
+    const {user, accessToken, refreshToken} = await createUser(data)
 
-    const token = await sing({
-      sub: user.id, 
-      email: user.email
-    })
-
-    const responseBody: Record<string, unknown> = {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-    }
+    const responsePayload = process.env.NODE_ENV !== 'production' 
+      ? {user, accessToken, refreshToken} : {user}
 
     const response = NextResponse.json(
-      responseBody, 
-       {status: 201}
+      responsePayload, 
+      { status: 201 }
     )
 
-    if (process.env.NODE_ENV !== 'production') {
-      responseBody.token = token
-    }
-
-    setAuthCookie({
-      response, token 
+    setAuthCookies({
+      response, accessToken, refreshToken
     })
 
-    return response 
+    return response
   } catch(err: unknown) {
     if(err instanceof ZodError) {
+      // ✅ Retorna os erros do Zod em formato legível
       return NextResponse.json({
-        messsage: err.message,
-        cause: err.cause
-      })
+        message: 'Dados inválidos',
+        errors: err.issues
+      }, { status: 400 })
     }
 
     if (err.message === 'EMAIL_ALREADY_EXISTS') {

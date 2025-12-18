@@ -1,11 +1,10 @@
-import { LoginResponseDTO } from "@/types/auth.types";
+import { AuthResponse } from "@/types/auth.types";
 import { AuthDTO } from "../validatiors/auth.login";
-import { UserResponseDTO } from "../validatiors/user.schema";
 import { verifyPassowrd } from "./argon.service";
-import { sing, TokenPayload } from "./token.service";
+import { signRefresh, sing, TokenPayload } from "./token.service";
 import { findUserByEmail } from "./user.service";
 
-export async function login(data: AuthDTO): Promise<LoginResponseDTO> {
+export async function login(data: AuthDTO): Promise<AuthResponse> {
   try { 
     const user = await findUserByEmail(data.email)
 
@@ -24,7 +23,8 @@ export async function login(data: AuthDTO): Promise<LoginResponseDTO> {
       email: user.email
     }
 
-    const token = await sing(payload)
+    const accessToken = await sing(payload)
+    const refreshToken = await signRefresh(payload)
 
     return {
       user: {
@@ -33,7 +33,8 @@ export async function login(data: AuthDTO): Promise<LoginResponseDTO> {
         email: user.email, 
         createdAt: user.createdAt
       },
-      token
+      accessToken, 
+      refreshToken
     }
 
   } catch(err) {

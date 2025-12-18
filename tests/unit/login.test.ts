@@ -1,15 +1,25 @@
 import { verifyPassowrd } from "@/app/lib/services/argon.service";
 import { login } from "@/app/lib/services/auth.service";
 import { sing } from "@/app/lib/services/token.service";
-import { findUserByEmail } from "@/app/lib/services/user.service";
+import {findUserByEmail } from "@/app/lib/services/user.service";
 
 jest.mock('@/app/lib/services/user.service', () => ({
-  findUserByEmail: jest.fn()
+  findUserByEmail: jest.fn(), 
+  createUser: jest.fn(), 
 }))
 
+jest.mock('@/app/lib/prisma', () => ({
+  prisma: {
+    user: {
+      findUnique: jest.fn(),
+      create: jest.fn(),
+    },
+  },
+}))
 
 jest.mock('@/app/lib/services/argon.service', () => ({
-  verifyPassowrd: jest.fn()
+  verifyPassowrd: jest.fn(),
+  hashPassoword: jest.fn()
 }))
 
 jest.mock('@/app/lib/services/token.service', () => ({
@@ -58,3 +68,4 @@ describe('AuthService - login', () => {
 
   })
 })
+

@@ -1,6 +1,8 @@
 import { UserResponseDTO } from "@/app/lib/validatiors/user.schema";
 
-export type LoginResponseDTO = {
+
+export type AuthResponse = {
   user: UserResponseDTO
-  token: string
+  accessToken: string, 
+  refreshToken: string
 }
