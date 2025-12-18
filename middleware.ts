@@ -1,37 +1,24 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { verifyAccessToken } from './app/lib/services/token.service';
-import { jwtVerify } from 'jose';
-
-const secret = new TextEncoder().encode(process.env.JWT_SECRET!)
+import { signRefresh, verifyAccessToken, verifyRefresh } from './app/lib/services/token.service';
 
 
 export async function middleware(req: NextRequest) {
-  const res = NextResponse.next()
+  const {pathname} = req.nextUrl
 
-  res.headers.set('Access-Control-Allow-Origin', '*')
-  res.headers.set('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS')
-  res.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-  res.headers.set('Access-Control-Allow-Credentials', 'true')
-
-  // Preflight
-  if (req.method === 'OPTIONS') {
-    return new NextResponse(null, { status: 204, headers: res.headers })
-  }
-
-  const pathname = req.nextUrl.pathname
-
-    if (
-    req.nextUrl.pathname === '/api/auth/register' ||
-    req.nextUrl.pathname === '/api/auth/login'
+  if (
+    pathname === '/api/auth/register' ||
+    pathname === '/api/auth/login' ||
+    pathname === '/api/auth/refresh'
   ) {
-    return res
+    return NextResponse.next()
   }
 
 
-  const token = req.cookies.get('acess_token')?.value
+  const token = req.cookies.get('access_token')?.value
+  const refresh = req.cookies.get('refresh_token')?.value
 
-  if(!token) {
+  if(!token && !refresh) {
     return NextResponse.json(
       {message: 'Não autorizado'}, 
       {status: 401}
@@ -39,19 +26,50 @@ export async function middleware(req: NextRequest) {
   }
 
   try { 
-    const {payload} = await jwtVerify(token, secret)
+
+    const payload = await verifyAccessToken(token!)
 
     const response = NextResponse.next()
 
-    response.headers.set('x-user-id', String(payload.sub))
+    response.headers.set('x-user-id', payload.sub)
 
     return response
 
   } catch {
-    return NextResponse.json(
-      { message: 'Token inválido ou expirado' },
-      { status: 401 }
-    )
+    if(!refresh) {
+      return NextResponse.json(
+        {message: 'Seção expirada'}, 
+        {status: 401}
+      )
+    }
+    try { 
+      const payload = await verifyRefresh(refresh)
+
+      const newAcess = await signRefresh({
+        sub: payload.sub, 
+        email: payload.email
+      })
+
+      const res = NextResponse.next()
+
+      res.cookies.set('access_token', newAcess, {
+        httpOnly: true, 
+        sameSite: 'lax',
+        secure: process.env.NODE_ENV === 'production', 
+        path: '/'
+      })
+
+      res.headers.set('x-user-id', payload.sub)
+
+      return res
+
+    } catch {
+      return NextResponse.json(
+        {message: 'Seção Expirada'}, 
+        {status: 401}
+      )
+    }
+
   }
 
 

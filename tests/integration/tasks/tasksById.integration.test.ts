@@ -27,6 +27,7 @@ jest.mock('next/headers', () => ({
   headers: jest.fn(),
 }))
 
+
 beforeEach(() => {
   jest.clearAllMocks()
 
@@ -35,7 +36,6 @@ beforeEach(() => {
     get: () => 'user-id',
   })
 })
-
 
 describe('GET /api/tasks/:id', () => {
   it('deve retornar a task quando existir', async () => {

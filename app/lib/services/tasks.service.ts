@@ -45,19 +45,22 @@ export async function updateTask(
   data:UpdateTaskDTO
 ): Promise<TaskResponse> {
   try { 
-    const task = await prisma.task.findUnique({where: {id: taskId}})
+    const task = await findById(taskId, userId)
+    console.log("🚀 ~ updateTask ~ ID DA TASK:", task.id)
+    console.log(data)
+    console.log(userId)
 
-    if (!task) {
-    throw new Error('TASK_NOT_FOUND')
+    if(!task) {
+      throw new Error('TASK_NOT_FOUND')
     }
 
-
     const updatedTask = await prisma.task.update({
-      where: {id: taskId, userId}, 
+      where: {id: taskId}, 
       data: {
-        title: data.title,
-        description: data.description, 
-        status: data.status
+        ...(data.title !== undefined && { title: data.title }),
+        ...(data.description !== undefined && { description: data.description }),
+        ...(data.status !== undefined && { status: data.status }),
+      
       }
     })
 
@@ -78,14 +81,13 @@ export async function updateTask(
 
 export async function deleteTask(taskId: string, userId: string): Promise<TaskResponse> {
   try { 
-    const task = await prisma.task.findUnique({where: {id: taskId}})
+    const task = await findById(taskId, userId)
 
     if(!task) throw new Error('Task não encontrada')
     
     return await prisma.task.delete({
       where: {
         id: taskId, 
-        userId: userId
       }
     })
   } catch(err) {
@@ -105,12 +107,18 @@ export async function findById(
   taskId: string, userId: string
 ): Promise<TaskResponse> {
   try { 
-    return await prisma.task.findUniqueOrThrow({
+    const task = await prisma.task.findFirst({
       where: {
         id: taskId, 
         userId: userId
       }
     })
+
+    if(!task) {
+      throw new Error('TASK_NOT_FOUND')
+    }
+
+    return task
   } catch(err) {
         if(
       err instanceof PrismaClientKnownRequestError ||
@@ -134,9 +142,6 @@ export async function findAllTasksByUser(
         userId: userId
       }
     })
-
-    if(!tasks) throw new Error('Tasks não encontradas para este usuário')
-
     return tasks
   } catch(err) {
         if(

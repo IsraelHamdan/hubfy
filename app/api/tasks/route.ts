@@ -1,5 +1,6 @@
 import { createTask, findAllTasksByUser } from "@/app/lib/services/tasks.service";
 import { createTaskSchema } from "@/app/lib/validatiors/tasks.schema";
+import throwException from "@/utils/exceptions";
 import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { ZodError } from "zod";
@@ -8,6 +9,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   try { 
     const body = await req.json()
     const data = createTaskSchema.parse(body)
+    console.log("🚀 ~ POST ~ data:", data)
 
     const headersList = await headers()
     const userId = headersList.get('x-user-id')
@@ -27,19 +29,14 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
   } catch(err) {
     if(err instanceof Error) {
-      if(err.message === 'USER_NOT_FOUND') {
-        return NextResponse.json(
-          {message: "Usuário não encontrado"},
-          {status: 404}
-        )
-      }
-      if (err.message === 'FORBIDDEN') {
-        return NextResponse.json(
-          { message: 'Acesso negado' },
-          { status: 403 }
-        )
-      }
-  
+      return throwException(err)
+    }
+
+    if(err instanceof ZodError) {
+      return NextResponse.json(
+        {message: `Erro de validação do Zod: ${err.message}`}, 
+        {status: 400}
+      )
     }
     
     return NextResponse.json(

@@ -17,7 +17,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     )
 
     setAuthCookie({response, token})
-
+    
     return response
 
   } catch(err) {

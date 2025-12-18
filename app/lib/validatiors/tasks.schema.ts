@@ -1,19 +1,18 @@
 import z from "zod";
 
-export const taskStatus = z.union([
-    z.literal('pending'), 
-    z.literal('in_progress'), 
-    z.literal('completed')
+export const taskStatusSchema = z.enum([
+  'pending',
+  'in_progress',
+  'completed',
 ])
 
-export type TaskStatus = z.infer<typeof taskStatus>
+export type TaskStatus = z.infer<typeof taskStatusSchema>
 
 export const createTaskSchema = z.object({
   title: z.string().min(3,{ message: "nome muito curto para o titulo"}),
   description: z.string().optional().nullable(), 
-  status: taskStatus.default('in_progress')
+  status: taskStatusSchema.default('in_progress')
 })
-
 
 export type CreateTaskDTO = z.infer<typeof createTaskSchema>
 

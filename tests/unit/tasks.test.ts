@@ -5,12 +5,12 @@ import { findUserById } from "@/app/lib/services/user.service";
 jest.mock('@/app/lib/prisma', () => ({
   prisma: {
     task: {
-      findUnique: jest.fn(),
       update: jest.fn(),
       create: jest.fn(), 
       delete: jest.fn(), 
       findUniqueOrThrow: jest.fn(),
       findMany: jest.fn(),
+      findFirst: jest.fn()
     },
   },
 }))
@@ -77,7 +77,7 @@ describe('TaskService - createTask', () => {
 describe('TaskService - updateTask (PATCH)', () => {
   it('deve atualizar uma task existente', async () => {
     const existingTask = { id: 'task-id' }
-    ;(prisma.task.findUnique as jest.Mock).mockResolvedValue(existingTask)
+    ;(prisma.task.findFirst as jest.Mock).mockResolvedValue(existingTask)
 
     const updatedTask = {
       id: 'task-id',
@@ -91,7 +91,7 @@ describe('TaskService - updateTask (PATCH)', () => {
     })
 
     expect(prisma.task.update).toHaveBeenCalledWith({
-      where: { id: 'task-id', userId: 'user-id' },
+      where: { id: 'task-id'},
       data: {
         title: undefined,
         description: undefined,
@@ -103,7 +103,7 @@ describe('TaskService - updateTask (PATCH)', () => {
   })
 
   it('deve lançar erro se a task não existir', async () => {
-    ;(prisma.task.findUnique as jest.Mock).mockResolvedValue(null)
+    ;(prisma.task.findFirst as jest.Mock).mockResolvedValue(null)
 
     await expect(
       updateTask('task-id', 'user-id', { status: 'completed' })
@@ -114,7 +114,7 @@ describe('TaskService - updateTask (PATCH)', () => {
 
 describe('TaskService - deleteTask', () => {
   it('deve deletar uma task existente', async () => {
-    ;(prisma.task.findUnique as jest.Mock).mockResolvedValue({ id: 'task-id' })
+    ;(prisma.task.findFirst as jest.Mock).mockResolvedValue({ id: 'task-id' })
     ;(prisma.task.delete as jest.Mock).mockResolvedValue({ id: 'task-id' })
 
     const result = await deleteTask('task-id', 'user-id')
