@@ -149,9 +149,9 @@ export async function DELETE(
     const deletedTask = await deleteTask(id, userId)
 
     return NextResponse.json(
-      deletedTask, 
-      {status: 200}
+      {status: 204}
     )
+    
   } catch (err) {
     if(err instanceof Error) {
       if(err.message === 'TASK_NOT_FOUND') {
