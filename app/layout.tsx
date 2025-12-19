@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./provider";
+import { AppLayout } from "@/components/AppLayout";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -31,7 +32,7 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${poppins.variable} antialiased`}>
         <Providers>
-          {children}
+          <AppLayout>{children}</AppLayout>
         </Providers>
       </body>
     </html>

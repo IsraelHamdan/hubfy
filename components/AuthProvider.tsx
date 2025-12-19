@@ -1,7 +1,7 @@
 'use client';
 import { api } from "@/app/lib/api";
 import { AuthDTO } from "@/app/lib/validatiors/auth.login";
-import { CreateUserDTO } from "@/app/lib/validatiors/user.schema";
+import { CreateUserDTO, UserResponseDTO } from "@/app/lib/validatiors/user.schema";
 import { AuthResponse } from "@/types/auth.types";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
@@ -9,9 +9,9 @@ import { createContext, ReactNode, useCallback, useContext, useEffect, useState 
 import { toast } from "sonner";
 
 export interface AuthContextType {
-  user: AuthResponse | null;
+  user: UserResponseDTO | null;
   login: (credentials: AuthDTO) => Promise<boolean>;
-  register: (data: CreateUserDTO) => Promise<AuthResponse | null>;
+  register: (data: CreateUserDTO) => Promise<boolean>;
   logout: () => Promise<void> | void;
   authenticated: boolean;
   isLoading: boolean;
@@ -34,7 +34,7 @@ export function useAuth() {
 export function AuthProvider(
   { children }: { children: ReactNode; }
 ) {
-  const [user, setUser] = useState<AuthResponse | null>(null);
+  const [user, setUser] = useState<UserResponseDTO | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const router = useRouter();
   const pathName = usePathname();
@@ -51,7 +51,7 @@ export function AuthProvider(
       setIsLoading(true);
 
       try {
-        const res = await api.get<AuthResponse>('/auth/me');
+        const res = await api.get<UserResponseDTO>('/auth/me');
 
         setUser(res.data);
 
@@ -78,22 +78,21 @@ export function AuthProvider(
 
 
   const register = useCallback(
-    async (data: CreateUserDTO): Promise<AuthResponse | null> => {
+    async (data: CreateUserDTO): Promise<boolean> => {
       try {
         setIsLoading(true);
 
-        const res = await api.post<AuthResponse>('/auth/register', data);
+        const res = await api.post<UserResponseDTO>('/auth/register', data);
 
         if (res.status === 201) {
           await checkAuthStatus({ redirectOnAuthChange: true });
-
-          return res.data;
+          return true;
         }
-        return null;
+        return false;
       } catch (err) {
         toast.error(`Erro na api ao fazer registro`);
         console.error("❌ [REGISTER] Erro no registro:", err);
-        return null;
+        return false;
       } finally {
         setIsLoading(false);
       }
@@ -105,12 +104,13 @@ export function AuthProvider(
     async (credentials: AuthDTO): Promise<boolean> => {
       try {
         setIsLoading(true);
-        await api.post<AuthResponse>("/auth/login", credentials);
+        const res = await api.post<UserResponseDTO>("/auth/login", credentials);
+        if (res.status === 200) {
+          await checkAuthStatus({ redirectOnAuthChange: true });
+          return true;
+        }
 
-        await checkAuthStatus({ redirectOnAuthChange: true });
-
-        return true;
-
+        return false;
       } catch (err) {
         toast.error("Erro na APi ao fazer login");
         console.error("❌ [LOGIN] Erro ao logar:", err);

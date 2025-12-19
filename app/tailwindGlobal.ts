@@ -72,3 +72,34 @@ export const cardStyle = {
     pb-2
   `
 };
+
+export const taskForm = {
+  formContainer: "flex flex-col gap-4",
+  inputWrapper: "w-full mb-4",
+  inputBase:
+    "w-full h-[54px] rounded-md border border-gray-300 bg-white px-4 text-gray-700 placeholder:text-gray-400 " +
+    "focus:outline-none focus:ring-2 focus:border-transparent",
+  label: "mb-2 block text-sm font-medium",
+  cardContainer: `
+    w-full
+    max-w-md
+    md:max-w-lg
+    rounded-xl
+    shadow-xl
+    bg-white
+  `,
+  cardContent: `
+    px-6
+    pb-6
+    transition-all duration-150
+  `,
+  cardHeader: `
+    px-6
+    pt-6
+    pb-2
+  `,
+  cardTitle: `
+    px-6
+    pt-2
+  `
+}
