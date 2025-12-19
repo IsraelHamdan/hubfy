@@ -4,7 +4,7 @@ import { AuthDTO } from "@/app/lib/validatiors/auth.login";
 import { CreateUserDTO } from "@/app/lib/validatiors/user.schema";
 import { AuthResponse } from "@/types/auth.types";
 import { usePathname } from "next/navigation";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -84,8 +84,9 @@ export function AuthProvider(
 
         const res = await api.post<AuthResponse>('/auth/register', data);
 
-        if (res.status === 200) {
+        if (res.status === 201) {
           await checkAuthStatus({ redirectOnAuthChange: true });
+
           return res.data;
         }
         return null;
