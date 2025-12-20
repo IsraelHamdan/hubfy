@@ -196,11 +196,8 @@ describe('DELETE /api/tasks/:id', () => {
 
     const res = await DELETE(req, { params: { id: 'task-id' } })
 
-    expect(res.status).toBe(200)
-
-    const body = await res.json()
-    expect(body.id).toBe('task-id')
-
+    expect(res.status).toBe(204)
+    expect(res.body).toBeNull()
     expect(deleteTask).toHaveBeenCalledWith('task-id', 'user-id')
   })
 

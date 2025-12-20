@@ -10,7 +10,7 @@ import { ZodError } from "zod";
 export const dynamic = 'force-dynamic'
 export async function GET(
   _: NextRequest, 
- context: {params: Promise<{id: string}>}
+ context: {params: {id: string}}
 ): Promise<NextResponse> {
   try { 
     const {id} = await context.params
@@ -67,7 +67,7 @@ export async function GET(
 //testado: funciona
 export async function PATCH(
   req: NextRequest, 
-  context: {params: Promise<{id: string}>}
+  context: {params: {id: string}}
 ): Promise<NextResponse> {
   try { 
     const {id} = await context.params
@@ -131,10 +131,10 @@ export async function PATCH(
 
 export async function DELETE(
   _: NextRequest, 
-  context: {params: Promise<{id: string}>}
+  context: {params: {id: string}}
 ): Promise<NextResponse> {
   try { 
-    const {id} = await context.params
+    const {id} = context.params
 
     const headersList = await headers()
     const userId = headersList.get('x-user-id')
@@ -146,9 +146,10 @@ export async function DELETE(
       )
     }
 
-    const deletedTask = await deleteTask(id, userId)
+    await deleteTask(id, userId)
 
-    return NextResponse.json(
+    return new NextResponse(
+      null,
       {status: 204}
     )
     

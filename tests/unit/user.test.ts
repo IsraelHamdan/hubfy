@@ -22,6 +22,16 @@ jest.mock('@/utils/prisma-errors', () => ({
   PrismaErrors: jest.fn(),
 }))
 
+jest.mock('@/app/lib/services/token.service', () => ({
+  generateAccessToken: jest.fn().mockResolvedValue('fake-access-token'),
+  generateRefreshToken: jest.fn().mockResolvedValue('fake-refresh-token'),
+  verifyToken: jest.fn().mockResolvedValue({
+    sub: 'user-id',
+    email: 'test@test.com'
+  })
+}))
+
+
 
 describe('UserService - createUser', () => {
   // Limpar mocks antes de cada teste
@@ -284,8 +294,8 @@ describe('UserService - createUser', () => {
 
       // Assert
       expect(result).toBeDefined()
-      expect(result.name).toBe(validUserData.name)
-      expect(result.email).toBe(validUserData.email)
+      expect(result.user.name).toBe(validUserData.name)
+      expect(result.user.email).toBe(validUserData.email)
     })
 
     it('deve preservar dados do usuário (exceto senha)', async () => {
@@ -312,8 +322,8 @@ describe('UserService - createUser', () => {
       const result = await createUser(userData)
 
       // Assert
-      expect(result.name).toBe(userData.name)
-      expect(result.email).toBe(userData.email)
+      expect(result.user.name).toBe(userData.name)
+      expect(result.user.email).toBe(userData.email)
 
     })
   })
@@ -340,7 +350,7 @@ describe('UserService - createUser', () => {
       const result = await createUser(userData)
 
       // Assert
-      expect(result.name).toBe(userData.name)
+      expect(result.user.name).toBe(userData.name)
     })
 
     it('deve lidar com email em uppercase', async () => {

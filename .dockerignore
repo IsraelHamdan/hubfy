@@ -1,0 +1,83 @@
+# ======================
+# Node / JS
+# ======================
+node_modules
+npm-debug.log
+yarn-error.log
+pnpm-debug.log
+.pnpm-store
+
+# ======================
+# Next.js
+# ======================
+.next
+out
+dist
+build
+
+# ======================
+# Prisma
+# ======================
+generated
+prisma/dev.db
+prisma/*.db
+prisma/*.db-journal
+
+# ======================
+# Tests
+# ======================
+coverage
+.vitest
+.jest
+.nyc_output
+
+# ======================
+# Docker
+# ======================
+docker-compose.yml
+docker-compose.*.yml
+Dockerfile.dev
+
+# ======================
+# Environment
+# ======================
+.env
+.env.*
+!.env.example
+
+# ======================
+# Git
+# ======================
+.git
+.gitignore
+.gitattributes
+
+# ======================
+# OS / Editor
+# ======================
+.DS_Store
+Thumbs.db
+.idea
+.vscode
+*.swp
+*.swo
+
+# ======================
+# Logs
+# ======================
+logs
+*.log
+
+# ======================
+# Temporary / Cache
+# ======================
+.cache
+tmp
+temp
+
+# ======================
+# Database volumes (safety)
+# ======================
+mysql_data
+postgres_data
+mongo_data
