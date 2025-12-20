@@ -1,7 +1,7 @@
 #!/bin/sh
 
-echo "⏳ Aguardando banco..."
-sleep 5
+echo "📦 Gerando Prisma Client..."
+npx prisma generate
 
 echo "📦 Rodando migrations..."
 npx prisma migrate deploy

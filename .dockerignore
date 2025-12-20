@@ -15,13 +15,6 @@ out
 dist
 build
 
-# ======================
-# Prisma
-# ======================
-generated
-prisma/dev.db
-prisma/*.db
-prisma/*.db-journal
 
 # ======================
 # Tests
@@ -79,5 +72,3 @@ temp
 # Database volumes (safety)
 # ======================
 mysql_data
-postgres_data
-mongo_data

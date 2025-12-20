@@ -9,10 +9,15 @@ RUN npm ci
 
 # ---------- Build ----------
 FROM base AS build
+
+ARG DATABASE_URL="mysql://user:pass@localhost:3306/db"
+ENV DATABASE_URL=$DATABASE_URL
+
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 RUN npx prisma generate
+
 RUN npm run build
 
 # ---------- Runtime ----------
@@ -24,6 +29,7 @@ COPY --from=build /app/.next ./.next
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/package.json ./package.json
 COPY --from=build /app/prisma ./prisma
+COPY --from=build /app/generated ./generated
 
 COPY docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
