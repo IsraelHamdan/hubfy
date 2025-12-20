@@ -1,5 +1,3 @@
-// formStyle.ts
-// formStyle.ts
 export const formStyle = {
   formContainer: "flex flex-col gap-5 mt-5",
   // só o card branco

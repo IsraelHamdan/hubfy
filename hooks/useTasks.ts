@@ -1,9 +1,9 @@
 import { api } from "@/app/lib/api";
 import { getQueryClient } from "@/app/lib/queryClient";
-import { CreateTaskDTO, createTaskSchema, TaskResponse } from "@/app/lib/validatiors/tasks.schema";
+import { CreateTaskDTO, createTaskSchema, TaskResponse, UpdateTaskDTO } from "@/app/lib/validatiors/tasks.schema";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
-type CreateTaskContext = {
+type TaskContext = {
   previousTasks?: TaskResponse[]
 }
 
@@ -15,6 +15,7 @@ const createTasks = async (data: CreateTaskDTO): Promise<TaskResponse> => {
     throw new Error("Dados inválidos para criar a task")
   }
   const res = await api.post<TaskResponse>('/tasks', validate.data) 
+
 
   if(res.status !== 201) {
     throw new Error("Erro ao criar task")
@@ -34,6 +35,21 @@ export const findTasksByUser = async (): Promise<TaskResponse[] | null> => {
   return null
 }
 
+export const updateTask = async (data: UpdateTaskDTO, taskId: string): Promise<TaskResponse | null> => {
+  const res = await api.patch<TaskResponse>(`/tasks/${taskId}`, data)
+
+  if(res.status === 200) {
+    const data = res.data 
+    return data
+  } 
+  return null
+}
+
+export const deleteTask = async (taskId: string): Promise<void> => {
+  await api.delete(`/tasks/${taskId}`)
+}
+
+
 export default function useTasks(taskId?: string) {
   const queryClient = getQueryClient()
 
@@ -41,7 +57,7 @@ export default function useTasks(taskId?: string) {
     TaskResponse, 
     Error, 
     CreateTaskDTO, 
-    CreateTaskContext
+    TaskContext
   >({
     mutationFn: async (data: CreateTaskDTO): Promise<TaskResponse> => {
       const task = await createTasks(data)
@@ -80,13 +96,108 @@ export default function useTasks(taskId?: string) {
     }, 
   })
 
-  const tasks = useQuery({
+  const tasksQuery = useQuery({
     queryKey: ["tasks"],
     queryFn: findTasksByUser
   })
 
+  const updateMutation = useMutation<
+    TaskResponse,
+    Error,
+    { taskId: string; data: UpdateTaskDTO },
+    TaskContext
+  >({
+      mutationFn: async ({ taskId, data }) => {
+        const task = await updateTask(data, taskId)
+        if (!task) throw new Error('Erro ao atualizar task')
+        return task
+      },
+
+      onMutate: async ({ taskId, data }) => {
+        await queryClient.cancelQueries({ queryKey: ['tasks'] })
+
+        const previousTasks =
+          queryClient.getQueryData<TaskResponse[]>(['tasks'])
+
+        queryClient.setQueryData<TaskResponse[]>(['tasks'], (old = []) =>
+          old.map((task) =>
+            task.id === taskId
+              ? {
+                  ...task,
+                  ...data,
+                  updatedAt: new Date(),
+                }
+              : task
+          )
+        )
+
+        return { previousTasks }
+      },
+
+      onError: (_err, _vars, context) => {
+        if (context?.previousTasks) {
+          queryClient.setQueryData(['tasks'], context.previousTasks)
+        }
+      },
+
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['tasks'] })
+      },
+    })
+
+  const deleteMutation = useMutation<
+    void,
+    Error,
+    string,
+    TaskContext
+  >({
+    mutationFn: async (taskId) => {
+      await deleteTask(taskId)
+    },
+
+    onMutate: async (taskId) => {
+      await queryClient.cancelQueries({ queryKey: ['tasks'] })
+
+      const previousTasks =
+        queryClient.getQueryData<TaskResponse[]>(['tasks'])
+
+      queryClient.setQueryData<TaskResponse[]>(['tasks'], (old = []) =>
+        old.filter((task) => task.id !== taskId)
+      )
+
+      return { previousTasks }
+    },
+
+    onError: (_err, _taskId, context) => {
+      if (context?.previousTasks) {
+        queryClient.setQueryData(['tasks'], context.previousTasks)
+      }
+    },
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tasks'] })
+    },
+  })
+
+
+
   return {
-    createMutation, 
-    tasks
+    createMutation,
+    updateMutation,
+    deleteMutation,
+
+    tasks: tasksQuery.data ?? [],
+    isLoading:
+      tasksQuery.isPending ||
+      createMutation.isPending ||
+      updateMutation.isPending ||
+      deleteMutation.isPending,
+    isError:
+      tasksQuery.isError ||
+      createMutation.isError ||
+      updateMutation.isError ||
+      deleteMutation.isError,
+
+    refetch: tasksQuery.refetch,
   }
 }

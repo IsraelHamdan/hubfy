@@ -20,13 +20,13 @@ export default async function DashboardLayout({ children }: { children: ReactNod
   const dehydratedState = dehydrate(queryClient);
 
   return (
-    <div className="flex min-h-screen">
-      <main className="flex-1 overflow-y-auto p-2">
-        <HydrationBoundary state={dehydratedState}>
-          {children}
-        </HydrationBoundary>
-      </main>
-    </div>
+
+    <main className="flex-1 overflow-y-auto p-4">
+      <HydrationBoundary state={dehydratedState}>
+        {children}
+      </HydrationBoundary>
+    </main>
+
 
   );
 }
