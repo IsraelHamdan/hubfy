@@ -138,7 +138,7 @@ No path você substitui pela pasta desjada
 
 ## 🗂️ Estrutura de Pastas
 
-
+**O MIDDLEWARE PRECISA FICAR NA RAIZ DO NEXT.JS, CASO CONTRÁRIO ELE NÃO É EXECUTADO**
 ```txt
 .
 ├── app
