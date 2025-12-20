@@ -138,20 +138,56 @@ No path você substitui pela pasta desjada
 
 ## 🗂️ Estrutura de Pastas
 
-/
-├── app/                # App Router (Next.js 16)
-│   ├── api/            # Rotas da API
-│   ├── (auth)/         # Rotas de autenticação
-│   ├── dashboard/      # Área privada
+
+```txt
+.
+├── app
+│   ├── api
+│   ├── dashboard
+│   ├── login
+│   ├── register
+│   ├── favicon.ico
+│   ├── globals.css
+│   ├── layout.tsx
+│   ├── page.tsx
+│   ├── provider.tsx
+│   └── tailwindGlobal.ts
 │
-├── lib/                # Serviços, helpers e utils
-├── generated/          # Prisma Client gerado
-├── prisma/             # Schema e migrations
-├── tests/              # Testes unitários e integração
-├── docker-compose.yml
+├── components
+├── coverage
+├── db
+│   └── db.sql
+│
+├── docker
+├── generated
+├── hooks
+├── lib
+├── node_modules
+├── prisma
+├── public
+├── tests
+├── types
+├── utils
+│
+├── middleware.ts
+├── docker-compose.yaml
 ├── Dockerfile
-├── .env.example
+├── api.md
 ├── README.md
+├── .dockerignore
+├── .env
+├── .env.example
+├── .gitignore
+├── components.json
+├── eslint.config.mjs
+├── jest.config.js
+├── next-env.d.ts
+├── next.config.ts
+├── postcss.config.mjs
+├── prisma.config.ts
+├── tsconfig.json
+└── package.json
+```
 
 
 ## 🧠 Decisões Técnicas Importantes
