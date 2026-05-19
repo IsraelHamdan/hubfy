@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { verifyAccessToken } from './app/lib/services/token.service';
+import { verifyAccessToken } from '@/lib/services/token.service';
 
 
 export async function middleware(req: NextRequest) {

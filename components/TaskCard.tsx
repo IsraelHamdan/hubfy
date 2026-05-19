@@ -1,10 +1,10 @@
 'use client';
 
-import { updateTaskSchema } from "@/app/lib/validatiors/tasks.schema";
+import { updateTaskSchema } from "@/lib/validatiors/tasks.schema";
 import { Card, CardContent, CardTitle } from "./ui/card";
 import useTasks from "@/hooks/useTasks";
 import { revalidateLogic, useForm } from "@tanstack/react-form";
-import { createSchemaFieldValidators } from "@/app/lib/validatiors/validationHelpers";
+import { createSchemaFieldValidators } from "@/lib/validatiors/validationHelpers";
 import { useState } from "react";
 import { Button } from "./ui/button";
 import { Pencil, Save, Trash2, X } from "lucide-react";

@@ -1,6 +1,6 @@
-import { login } from "@/app/lib/services/auth.service";
-import { setAuthCookies } from "@/app/lib/services/cookie.service";
-import { authSchema } from "@/app/lib/validatiors/auth.login";
+import { login } from "@/lib/services/auth.service";
+import { setAuthCookies } from "@/lib/services/cookie.service";
+import { authSchema } from "@/lib/validatiors/auth.login";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest): Promise<NextResponse> {

@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { alunoBaseSchema } from "./aluno";
 
 export const createFieldValidators = <T extends z.ZodTypeAny>(
   fieldSchema: T,

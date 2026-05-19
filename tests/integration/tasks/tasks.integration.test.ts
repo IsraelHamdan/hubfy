@@ -1,4 +1,4 @@
-jest.mock('@/app/lib/services/tasks.service', () => ({
+jest.mock('@/lib/services/tasks.service', () => ({
   createTask: jest.fn(),
   findAllTasksByUser: jest.fn(),
   updateTask: jest.fn()
@@ -23,7 +23,7 @@ beforeEach(() => {
 
 import { POST, GET } from '@/app/api/tasks/route'
 import { NextRequest } from 'next/server'
-import { createTask, findAllTasksByUser} from '@/app/lib/services/tasks.service'
+import { createTask, findAllTasksByUser} from '@/lib/services/tasks.service'
 import { headers } from 'next/headers';
 
 

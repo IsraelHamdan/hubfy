@@ -1,10 +1,10 @@
-import { prisma } from "@/app/lib/prisma";
-import { hashPassoword } from "@/app/lib/services/argon.service";
-import { createUser } from "@/app/lib/services/user.service";
-import { signRefresh, sing } from "@/app/lib/services/token.service";
+import { prisma } from "@/lib/prisma";
+import { hashPassoword } from "@/lib/services/argon.service";
+import { createUser } from "@/lib/services/user.service";
+import { signRefresh, sing } from "@/lib/services/token.service";
 import { refresh } from "next/cache";
 
-jest.mock('@/app/lib/prisma', () => ({
+jest.mock('@/lib/prisma', () => ({
   prisma: {
     user: {
       findUnique: jest.fn(),
@@ -13,11 +13,11 @@ jest.mock('@/app/lib/prisma', () => ({
   },
 }))
 
-jest.mock('@/app/lib/services/argon.service', () => ({
+jest.mock('@/lib/services/argon.service', () => ({
   hashPassoword: jest.fn()
 }))
 
-jest.mock('@/app/lib/services/token.service', () => ({
+jest.mock('@/lib/services/token.service', () => ({
   sing: jest.fn(), 
   signRefresh: jest.fn()
 }))

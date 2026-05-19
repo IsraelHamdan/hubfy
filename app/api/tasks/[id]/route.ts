@@ -1,5 +1,5 @@
-import { deleteTask, findById, updateTask } from "@/app/lib/services/tasks.service";
-import { updateTaskSchema } from "@/app/lib/validatiors/tasks.schema";
+import { deleteTask, findById, updateTask } from "@/lib/services/tasks.service";
+import { updateTaskSchema } from "@/lib/validatiors/tasks.schema";
 import { PrismaClientValidationError } from "@prisma/client/runtime/client";
 import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
@@ -8,9 +8,14 @@ import { ZodError } from "zod";
 
 //testado: funciona
 export const dynamic = 'force-dynamic'
+
+type TaskRouteContext = {
+  params: Promise<{ id: string }>
+}
+
 export async function GET(
   _: NextRequest, 
- context: {params: {id: string}}
+  context: TaskRouteContext
 ): Promise<NextResponse> {
   try { 
     const {id} = await context.params
@@ -67,7 +72,7 @@ export async function GET(
 //testado: funciona
 export async function PATCH(
   req: NextRequest, 
-  context: {params: {id: string}}
+  context: TaskRouteContext
 ): Promise<NextResponse> {
   try { 
     const {id} = await context.params
@@ -131,10 +136,10 @@ export async function PATCH(
 
 export async function DELETE(
   _: NextRequest, 
-  context: {params: {id: string}}
+  context: TaskRouteContext
 ): Promise<NextResponse> {
   try { 
-    const {id} = context.params
+    const {id} = await context.params
 
     const headersList = await headers()
     const userId = headersList.get('x-user-id')

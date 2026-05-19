@@ -1,6 +1,6 @@
 'use client';
-import { createTaskSchema } from "@/app/lib/validatiors/tasks.schema";
-import { createSchemaFieldValidators } from "@/app/lib/validatiors/validationHelpers";
+import { createTaskSchema } from "@/lib/validatiors/tasks.schema";
+import { createSchemaFieldValidators } from "@/lib/validatiors/validationHelpers";
 import useTasks from "@/hooks/useTasks";
 import { revalidateLogic, useForm } from "@tanstack/react-form";
 import { Card, CardContent, CardTitle } from "./ui/card";

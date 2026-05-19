@@ -1,8 +1,8 @@
-import { prisma } from "@/app/lib/prisma";
-import { createTask, deleteTask, findAllTasksByUser, findById, updateTask } from "@/app/lib/services/tasks.service";
-import { findUserById } from "@/app/lib/services/user.service";
+import { prisma } from "@/lib/prisma";
+import { createTask, deleteTask, findAllTasksByUser, findById, updateTask } from "@/lib/services/tasks.service";
+import { findUserById } from "@/lib/services/user.service";
 
-jest.mock('@/app/lib/prisma', () => ({
+jest.mock('@/lib/prisma', () => ({
   prisma: {
     task: {
       update: jest.fn(),
@@ -15,7 +15,7 @@ jest.mock('@/app/lib/prisma', () => ({
   },
 }))
 
-jest.mock('@/app/lib/services/user.service', () => ({
+jest.mock('@/lib/services/user.service', () => ({
   findUserById: jest.fn()
 }))
 

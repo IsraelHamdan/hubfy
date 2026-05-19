@@ -1,6 +1,6 @@
 'use client';
 import { useState } from "react";
-import { getQueryClient } from "./lib/queryClient";
+import { getQueryClient } from "@/lib/queryClient";
 import { QueryClientProvider, HydrationBoundary } from "@tanstack/react-query";
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Toaster } from "sonner";

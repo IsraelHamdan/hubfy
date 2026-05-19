@@ -1,4 +1,4 @@
-import { signRefresh, verifyRefresh } from "@/app/lib/services/token.service";
+import { signRefresh, verifyRefresh } from "@/lib/services/token.service";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest): Promise<NextResponse> {

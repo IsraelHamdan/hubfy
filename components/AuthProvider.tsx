@@ -1,7 +1,7 @@
 'use client';
-import { api } from "@/app/lib/api";
-import { AuthDTO } from "@/app/lib/validatiors/auth.login";
-import { CreateUserDTO, UserResponseDTO } from "@/app/lib/validatiors/user.schema";
+import { api } from "@/lib/api";
+import { AuthDTO } from "@/lib/validatiors/auth.login";
+import { CreateUserDTO, UserResponseDTO } from "@/lib/validatiors/user.schema";
 import { AuthResponse } from "@/types/auth.types";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";

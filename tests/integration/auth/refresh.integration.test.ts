@@ -1,12 +1,12 @@
 import { POST } from "@/app/api/auth/refresh/route";
 import { NextRequest } from "next/server";
 
-jest.mock('@/app/lib/services/token.service', () => ({
+jest.mock('@/lib/services/token.service', () => ({
   verifyRefresh: jest.fn(), 
   signRefresh: jest.fn()
 }))
 
-import { signRefresh, verifyRefresh } from "@/app/lib/services/token.service";
+import { signRefresh, verifyRefresh } from "@/lib/services/token.service";
 
 describe('POST /api/auth/refresh', () => {
   beforeEach(() => {

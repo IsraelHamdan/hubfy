@@ -1,13 +1,13 @@
 'use client';
 import { useAuth } from '@/components/AuthProvider';
 import { revalidateLogic, useForm } from '@tanstack/react-form';
-import { createSchemaFieldValidators } from '../lib/validatiors/validationHelpers';
-import { createUserSchema } from '../lib/validatiors/user.schema';
+import { createSchemaFieldValidators } from '@/lib/validatiors/validationHelpers';
+import { createUserSchema } from '@/lib/validatiors/user.schema';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { cardStyle, formStyle } from '../tailwindGlobal';
 import { FormInput } from '@/components/formInput';
-import { authSchema } from '../lib/validatiors/auth.login';
+import { authSchema } from '@/lib/validatiors/auth.login';
 import { Card, CardAction, CardContent, CardHeader } from '@/components/ui/card';
 import Link from 'next/link';
 import Tipography from '@/components/Tipography';

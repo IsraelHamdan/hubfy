@@ -1,6 +1,6 @@
-import { setAuthCookies } from "@/app/lib/services/cookie.service";
-import { createUser } from "@/app/lib/services/user.service";
-import { createUserSchema, } from "@/app/lib/validatiors/user.schema";
+import { setAuthCookies } from "@/lib/services/cookie.service";
+import { createUser } from "@/lib/services/user.service";
+import { createUserSchema, } from "@/lib/validatiors/user.schema";
 import { NextRequest, NextResponse } from "next/server";
 import { ZodError } from "zod";
 
@@ -34,7 +34,7 @@ export async function POST (req: NextRequest): Promise<NextResponse> {
       }, { status: 400 })
     }
 
-    if (err.message === 'EMAIL_ALREADY_EXISTS') {
+    if (err instanceof Error && err.message === 'EMAIL_ALREADY_EXISTS') {
       return NextResponse.json(
         { message: 'Email já cadastrado' },
         { status: 409 }
@@ -42,7 +42,7 @@ export async function POST (req: NextRequest): Promise<NextResponse> {
     }
 
     return NextResponse.json(
-      { message: err.message ?? 'Erro interno do servidor' },
+      { message: err instanceof Error ? err.message : 'Erro interno do servidor' },
       { status: 500 }
     )
   }

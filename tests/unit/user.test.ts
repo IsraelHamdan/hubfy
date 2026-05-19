@@ -1,10 +1,10 @@
-import { prisma } from "@/app/lib/prisma";
-import { hashPassoword } from "@/app/lib/services/argon.service";
-import { createUser } from "@/app/lib/services/user.service";
+import { prisma } from "@/lib/prisma";
+import { hashPassoword } from "@/lib/services/argon.service";
+import { createUser } from "@/lib/services/user.service";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
 import { PrismaErrors } from '@/utils/prisma-errors'
 
-jest.mock('@/app/lib/prisma', () => ({
+jest.mock('@/lib/prisma', () => ({
   prisma: {
     user: {
       findUnique: jest.fn(),
@@ -14,7 +14,7 @@ jest.mock('@/app/lib/prisma', () => ({
 }))
 
 // Mock da função de hash
-jest.mock('@/app/lib/services/argon.service', () => ({
+jest.mock('@/lib/services/argon.service', () => ({
   hashPassoword: jest.fn(),
 }))
 
@@ -22,7 +22,7 @@ jest.mock('@/utils/prisma-errors', () => ({
   PrismaErrors: jest.fn(),
 }))
 
-jest.mock('@/app/lib/services/token.service', () => ({
+jest.mock('@/lib/services/token.service', () => ({
   generateAccessToken: jest.fn().mockResolvedValue('fake-access-token'),
   generateRefreshToken: jest.fn().mockResolvedValue('fake-refresh-token'),
   verifyToken: jest.fn().mockResolvedValue({

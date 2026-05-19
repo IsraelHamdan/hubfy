@@ -1,6 +1,6 @@
-import { api } from "@/app/lib/api";
-import { getQueryClient } from "@/app/lib/queryClient";
-import { CreateTaskDTO, createTaskSchema, TaskResponse, UpdateTaskDTO } from "@/app/lib/validatiors/tasks.schema";
+import { api } from "@/lib/api";
+import { getQueryClient } from "@/lib/queryClient";
+import { CreateTaskDTO, createTaskSchema, TaskResponse, UpdateTaskDTO } from "@/lib/validatiors/tasks.schema";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 type TaskContext = {

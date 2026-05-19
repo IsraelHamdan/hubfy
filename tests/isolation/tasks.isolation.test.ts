@@ -1,9 +1,9 @@
 import { NextRequest } from 'next/server'
 import { headers } from 'next/headers'
 import { GET } from '@/app/api/tasks/[id]/route'
-import { findById } from '@/app/lib/services/tasks.service'
+import { findById } from '@/lib/services/tasks.service'
 
-jest.mock('@/app/lib/services/tasks.service', () => ({
+jest.mock('@/lib/services/tasks.service', () => ({
   findById: jest.fn(),
 }))
 
@@ -33,7 +33,7 @@ describe('Tasks - isolamento entre usuários', () => {
     )
 
     const res = await GET(req, {
-      params: { id: 'task-id' },
+      params: Promise.resolve({ id: 'task-id' }),
     })
 
     expect(res.status).toBe(403)

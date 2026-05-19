@@ -1,5 +1,5 @@
-import { createTask, findAllTasksByUser } from "@/app/lib/services/tasks.service";
-import { createTaskSchema } from "@/app/lib/validatiors/tasks.schema";
+import { createTask, findAllTasksByUser } from "@/lib/services/tasks.service";
+import { createTaskSchema } from "@/lib/validatiors/tasks.schema";
 import throwException from "@/utils/exceptions";
 import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";

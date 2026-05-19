@@ -1,7 +1,7 @@
 import SidebarComponent from "@/components/SideBar";
 import { Metadata } from "next";
 import { ReactNode } from "react";
-import { getQueryClient } from "../lib/queryClient";
+import { getQueryClient } from "@/lib/queryClient";
 import useTasks, { findTasksByUser } from "@/hooks/useTasks";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 

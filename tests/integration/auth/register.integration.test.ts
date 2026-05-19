@@ -1,13 +1,13 @@
 import { POST } from "@/app/api/auth/register/route";
-import { setAuthCookies } from "@/app/lib/services/cookie.service";
-import { createUser } from "@/app/lib/services/user.service";
+import { setAuthCookies } from "@/lib/services/cookie.service";
+import { createUser } from "@/lib/services/user.service";
 import { NextRequest } from "next/server";
 
-jest.mock('@/app/lib/services/user.service', () => ({
+jest.mock('@/lib/services/user.service', () => ({
   createUser: jest.fn()
 }))
 
-jest.mock('@/app/lib/services/cookie.service', () => ({
+jest.mock('@/lib/services/cookie.service', () => ({
   setAuthCookies: jest.fn()
 }))
 

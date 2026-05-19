@@ -11,13 +11,13 @@ import {
   findById,
   updateTask,
   deleteTask,
-} from '@/app/lib/services/tasks.service'
+} from '@/lib/services/tasks.service'
 
 /* -------------------------------------------------------------------------- */
 /*                                    MOCKS                                   */
 /* -------------------------------------------------------------------------- */
 
-jest.mock('@/app/lib/services/tasks.service', () => ({
+jest.mock('@/lib/services/tasks.service', () => ({
   findById: jest.fn(),
   updateTask: jest.fn(),
   deleteTask: jest.fn(),
@@ -53,7 +53,7 @@ describe('GET /api/tasks/:id', () => {
       { method: 'GET' }
     )
 
-    const res = await GET(req, { params: { id: 'task-id' } })
+    const res = await GET(req, { params: Promise.resolve({ id: 'task-id' }) })
 
     expect(res.status).toBe(200)
 
@@ -79,7 +79,7 @@ describe('GET /api/tasks/:id', () => {
       { method: 'GET' }
     )
 
-    const res = await GET(req, { params: { id: 'task-id' } })
+    const res = await GET(req, { params: Promise.resolve({ id: 'task-id' }) })
 
     expect(res.status).toBe(401)
   })
@@ -110,7 +110,7 @@ describe('PATCH /api/tasks/:id', () => {
     )
 
     const res = await PATCH(req, {
-      params: { id: 'task-id' },
+      params: Promise.resolve({ id: 'task-id' }),
     })
 
     expect(res.status).toBe(200)
@@ -149,7 +149,7 @@ describe('PATCH /api/tasks/:id', () => {
     )
 
     const res = await PATCH(req, {
-      params: { id: 'task-id' },
+      params: Promise.resolve({ id: 'task-id' }),
     })
 
     expect(res.status).toBe(401)
@@ -172,7 +172,7 @@ describe('PATCH /api/tasks/:id', () => {
     )
 
     const res = await PATCH(req, {
-      params: { id: 'task-id' },
+      params: Promise.resolve({ id: 'task-id' }),
     })
 
     expect(res.status).toBe(404)
@@ -194,7 +194,7 @@ describe('DELETE /api/tasks/:id', () => {
       { method: 'DELETE' }
     )
 
-    const res = await DELETE(req, { params: { id: 'task-id' } })
+    const res = await DELETE(req, { params: Promise.resolve({ id: 'task-id' }) })
 
     expect(res.status).toBe(204)
     expect(res.body).toBeNull()
@@ -211,7 +211,7 @@ describe('DELETE /api/tasks/:id', () => {
       { method: 'DELETE' }
     )
 
-    const res = await DELETE(req, { params: { id: 'task-id' } })
+    const res = await DELETE(req, { params: Promise.resolve({ id: 'task-id' }) })
 
     expect(res.status).toBe(404)
 
@@ -229,7 +229,7 @@ describe('DELETE /api/tasks/:id', () => {
       { method: 'DELETE' }
     )
 
-    const res = await DELETE(req, { params: { id: 'task-id' } })
+    const res = await DELETE(req, { params: Promise.resolve({ id: 'task-id' }) })
 
     expect(res.status).toBe(404)
 
