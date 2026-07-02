@@ -1,6 +1,5 @@
 'use client';
 import Link from "next/link";
-import { useAuth } from "./AuthProvider";
 import { SidebarButtonProps } from "@/types/sidebarButton";
 import { Activity } from "react";
 import { ListChecks, LogOut, PanelLeft, UsersRound } from "lucide-react";
@@ -8,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "./ui/sidebar";
 import Tipography from "./Tipography";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
 
 function SidebarButton({ to, icon, label, active }: SidebarButtonProps) {
   const { state } = useSidebar();

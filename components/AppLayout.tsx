@@ -6,9 +6,9 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import SidebarComponent from "@/components/SideBar";
-import { useAuth } from "@/components/AuthProvider";
 import Tipography from "./Tipography";
 import { usePathname } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
 
 export function AppLayout({ children }: { children: React.ReactNode; }) {
   const { user } = useAuth();

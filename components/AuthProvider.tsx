@@ -1,81 +1,88 @@
 'use client';
+import { AuthContext, AuthContextType } from "@/hooks/useAuth";
 import { api } from "@/lib/api";
+import { CLIENT_ROUTES, isClientProtectedRoute, isClientPublicRoute, isClientRootRedirectRoute } from "@/lib/routes.config";
 import { AuthDTO } from "@/lib/validatiors/auth.login";
 import { CreateUserDTO, UserResponseDTO } from "@/lib/validatiors/user.schema";
-import { AuthResponse } from "@/types/auth.types";
+import axios, { isAxiosError } from "axios";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
-import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react";
+import { ReactNode, useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
-export interface AuthContextType {
-  user: UserResponseDTO | null;
-  login: (credentials: AuthDTO) => Promise<boolean>;
-  register: (data: CreateUserDTO) => Promise<boolean>;
-  logout: () => Promise<void> | void;
-  authenticated: boolean;
-  isLoading: boolean;
-}
-
 const PUBLIC_ROUTES = ['/login', '/register'];
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-export function useAuth() {
-  const context = useContext(AuthContext);
-
-  if (context === undefined) {
-    throw new Error("useAuth deve ser usado dentro de um AuthProvider");
-  }
-
-  return context;
-}
 
 export function AuthProvider(
   { children }: { children: ReactNode; }
 ) {
   const [user, setUser] = useState<UserResponseDTO | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+
   const router = useRouter();
   const pathName = usePathname();
+  const currentPath = pathName ?? "/";
 
-  const isPublicRoute = PUBLIC_ROUTES.some((route) =>
-    pathName?.startsWith(route)
+  const isRedirectRoute = isClientRootRedirectRoute(currentPath);
+  const isPublicRoute = isClientPublicRoute(currentPath);
+  const isProtectedRoute = isClientProtectedRoute(currentPath);
+
+  const redirectTo = useCallback(
+    (targetPath: string) => {
+      if (currentPath !== targetPath) {
+        router.replace(targetPath);
+      }
+    },
+    [currentPath, router]
   );
 
   const checkAuthStatus = useCallback(
-    async (
-      { redirectOnAuthChange = false }:
-        { redirectOnAuthChange?: boolean; } = {}
-    ) => {
+    async (opts?: { redirectOnAuthChange?: boolean; }) => {
+      const { redirectOnAuthChange = true } = opts || {};
+
       setIsLoading(true);
 
       try {
-        const res = await api.get<UserResponseDTO>('/auth/me');
-
-        setUser(res.data);
+        const res = await api.get<UserResponseDTO>("/auth/me");
+        const me = res.data;
+        setUser(me);
 
         if (redirectOnAuthChange && isPublicRoute) {
-          router.replace('/dashboard');
+          redirectTo(CLIENT_ROUTES.DEFAULT_AUTHENTICATED_ROUTE);
         }
-      } catch (err) {
 
+        return me;
+      } catch (err) {
         setUser(null);
 
-        if (redirectOnAuthChange && !isPublicRoute) {
-          router.replace('/login');
+        if (redirectOnAuthChange && isProtectedRoute) {
+          redirectTo(CLIENT_ROUTES.AUTH_ROUTE);
         }
+
+        const isUnauthorized =
+          axios.isAxiosError(err) && err.response?.status === 401;
+
+        if (!isUnauthorized && isProtectedRoute) {
+          toast.error("Erro na autenticação tente novamente mais tarde");
+          console.error(`❌[CHECK AUTH] Erro na verificação: ${err}`);
+        }
+
+        return null;
       } finally {
         setIsLoading(false);
       }
     },
-    [isPublicRoute, router]
+    [isProtectedRoute, isPublicRoute, redirectTo]
   );
 
-  useEffect(() => {
-    checkAuthStatus({ redirectOnAuthChange: true });
-  }, [pathName, checkAuthStatus]);
 
+  useEffect(() => {
+    if (isRedirectRoute) {
+      redirectTo(CLIENT_ROUTES.AUTH_ROUTE);
+      return;
+    }
+
+    void checkAuthStatus({ redirectOnAuthChange: true });
+  }, [checkAuthStatus, isRedirectRoute, redirectTo]);
 
   const register = useCallback(
     async (data: CreateUserDTO): Promise<boolean> => {
@@ -105,6 +112,8 @@ export function AuthProvider(
       try {
         setIsLoading(true);
         const res = await api.post<UserResponseDTO>("/auth/login", credentials);
+        console.log("🚀 ~ AuthProvider ~ res:", res);
+
         if (res.status === 200) {
           await checkAuthStatus({ redirectOnAuthChange: true });
           return true;
@@ -113,7 +122,8 @@ export function AuthProvider(
         return false;
       } catch (err) {
         toast.error("Erro na APi ao fazer login");
-        console.error("❌ [LOGIN] Erro ao logar:", err);
+        console.error(err);
+
         setUser(null);
         return false;
       } finally { setIsLoading(false); }

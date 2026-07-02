@@ -1,45 +1,39 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
-import { verifyAccessToken } from '@/lib/services/token.service';
-
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { verifyAccessToken } from "@/lib/services/auth/token.service";
 
 export async function middleware(req: NextRequest) {
-  const {pathname} = req.nextUrl
+  const { pathname } = req.nextUrl;
 
   if (
-    pathname === '/api/auth/register' ||
-    pathname === '/api/auth/login' ||
-    pathname === '/api/auth/refresh'
+    pathname === "/api/auth/register" ||
+    pathname === "/api/auth/login" ||
+    pathname === "/api/auth/refresh"
   ) {
-    return NextResponse.next()
+    return NextResponse.next();
   }
-  const token = req.cookies.get('access_token')?.value
+  const token = req.cookies.get("access_token")?.value;
 
-  try { 
-    if (!token ) {
-      return NextResponse.json(
-        { message: 'Token ausente' },
-        { status: 401 }
-      )
+  try {
+    if (!token) {
+      return NextResponse.json({ message: "Token ausente" }, { status: 401 });
     }
 
-    const payload = await verifyAccessToken(token)
+    const payload = await verifyAccessToken(token);
 
-    const response = NextResponse.next()
+    const response = NextResponse.next();
 
-    response.headers.set('x-user-id', payload.sub)
+    response.headers.set("x-user-id", payload.sub);
 
-    return response
-
+    return response;
   } catch {
     return NextResponse.json(
-      { message: 'Access token inválido ou expirado' },
-      { status: 401 }
-    )
+      { message: "Access token inválido ou expirado" },
+      { status: 401 },
+    );
   }
-
 }
 
 export const config = {
-  matcher: '/api/:path*',
-}
+  matcher: "/api/:path*",
+};

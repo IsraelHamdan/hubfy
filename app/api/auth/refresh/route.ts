@@ -1,43 +1,38 @@
-import { signRefresh, verifyRefresh } from "@/lib/services/token.service";
+import { signRefresh, verifyRefresh } from "@/lib/services/auth/token.service";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
-  try { 
-    const refresh = req.cookies.get('refresh_token')?.value
+  try {
+    const refresh = req.cookies.get("refresh_token")?.value;
 
     if (!refresh) {
       return NextResponse.json(
-        { message: 'Refresh token ausente' },
-        { status: 401 }
-      )
+        { message: "Refresh token ausente" },
+        { status: 401 },
+      );
     }
 
-    const payload = await verifyRefresh(refresh)
+    const payload = await verifyRefresh(refresh);
 
     const newAcess = await signRefresh({
-      sub: payload.sub, 
-      email: payload.email
-    })
+      sub: payload.sub,
+      email: payload.email,
+    });
 
     const res = NextResponse.json(
-      {message: 'Token Renovado'},
-      {status: 200}
-    )
+      { message: "Token Renovado" },
+      { status: 200 },
+    );
 
-    res.cookies.set('access_token', newAcess, {
-      httpOnly: true, 
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production', 
-      path: '/'
-    })
+    res.cookies.set("access_token", newAcess, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+    });
 
-    
-    return res
-
+    return res;
   } catch {
-    return NextResponse.json(
-      {message: 'Seção Expirada'}, 
-      {status: 401}
-    )
+    return NextResponse.json({ message: "Seção Expirada" }, { status: 401 });
   }
 }

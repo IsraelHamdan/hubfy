@@ -1,21 +1,17 @@
 'use client';
-import { useAuth } from '@/components/AuthProvider';
 import { revalidateLogic, useForm } from '@tanstack/react-form';
-import { createSchemaFieldValidators } from '@/lib/validatiors/validationHelpers';
-import { createUserSchema } from '@/lib/validatiors/user.schema';
-import { useState } from 'react';
 import { toast } from 'sonner';
 import { cardStyle, formStyle } from '../tailwindGlobal';
 import { FormInput } from '@/components/formInput';
 import { authSchema } from '@/lib/validatiors/auth.login';
-import { Card, CardAction, CardContent, CardHeader } from '@/components/ui/card';
+import { Card, CardContent, } from '@/components/ui/card';
 import Link from 'next/link';
 import Tipography from '@/components/Tipography';
+import { useZodValidation } from '@/hooks/useZodValidation';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function LoginPage() {
-  const [error, setError] = useState("");
-  const validate = createSchemaFieldValidators(authSchema);
-
+  const { fieldValidator } = useZodValidation(authSchema);
   const { login } = useAuth();
 
   const form = useForm({
@@ -35,13 +31,14 @@ export default function LoginPage() {
 
     onSubmit: async ({ value }) => {
       try {
-        console.log('Clicou');
-        const validation = authSchema.safeParse(value);
-        console.log("🚀 ~ LoginPage ~ validation:", validation);
+        const success = await login(value);
 
-        if (validation.success) {
-          await login(value);
+        if (!success) {
+          toast.error("Falha no login", {
+            description: "Email ou senha incorretos",
+          });
         }
+
       } catch (err) {
 
         toast.error("Falha no login desconhecida no login", {
@@ -73,16 +70,14 @@ export default function LoginPage() {
         </CardContent>
         <CardContent className={cardStyle.content}>
           <form
-            onSubmit={
-              (e) => {
-                e.preventDefault(),
-                  e.stopPropagation();
-                form.handleSubmit();
-              }
-            }
+            onSubmit={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              form.handleSubmit();
+            }}
             className="mt-2 flex flex-col gap-5 w-full"
           >
-            <form.Field name='email'>
+            <form.Field name='email' validators={fieldValidator("email")}>
               {(field) => (
                 <div className={formStyle.inputWrapper}>
                   <label htmlFor={field.name} className='font-semibold'>Seu email</label>
@@ -97,7 +92,7 @@ export default function LoginPage() {
               )}
             </form.Field>
 
-            <form.Field name='password'>
+            <form.Field name='password' validators={fieldValidator("password")}>
               {(field) => (
                 <div className={formStyle.inputWrapper}>
                   <label htmlFor={field.name} className='font-semibold'>Sua senha</label>
